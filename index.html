@@ -74,7 +74,7 @@
   <header>
     <h1>📋 Call Centre Detail</h1>
     <p>Offline app — kisi bhi centre ki history check karein: naam, phone, location aur SECP status. Internet ki zaroorat nahi.</p>
-    <span class="offbadge">● OFFLINE</span><span class="datebadge" id="datadate"></span><span class="datebadge">v20261124-2302</span><br>
+    <span class="offbadge">● OFFLINE</span><span class="datebadge" id="datadate"></span><span class="datebadge">v20261124-2315</span><br>
     <button class="dlbtn" id="dlbtn">⬇️ App Download karein — Offline use ke liye</button>
   </header>
 
@@ -129,7 +129,7 @@
     2. Card ka <b>rang</b> pehli nishani hai: laal = red flag, peela = yellow, hara = registered, grey = abhi check nahi hua.<br>
     3. Card par tap karein — poori history khul jayegi: campaign, SECP status, CUIN aur notes.<br>
     4. Phone number par tap kar ke direct call kar sakte hain.<br>
-    5. <b>⬇️ Download button</b> se app ki file save kar lein — phir bina internet ke bhi chalegi. Naya version aaye to link se dobara download kar lein.
+    5. <b>⬇️ Download button</b> dabayen — Chrome mein app install ho jayegi (home screen par icon), warna file save ho jayegi jo bina internet ke chalegi. Naya version aaye to link se dobara download kar lein.
   </div>
 
   <footer id="foot"></footer>
@@ -328,8 +328,27 @@ $("clear").addEventListener("click", function(){
   renderAreaSelect(); applyFilters();
 });
 $("more").addEventListener("click", function(){ shown += PAGE; renderCards(); });
+var deferredPrompt = null;
+window.addEventListener("beforeinstallprompt", function(e){
+  e.preventDefault();
+  deferredPrompt = e;
+  $("dlbtn").textContent = "📲 App Install karein — Home Screen par";
+});
+window.addEventListener("appinstalled", function(){
+  deferredPrompt = null;
+  $("dlbtn").textContent = "✓ App install ho gayi";
+});
 $("dlbtn").addEventListener("click", function(){
   var btn = $("dlbtn");
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(choice){
+      if(choice.outcome === "accepted"){ btn.textContent = "✓ Install ho rahi hai…"; }
+      else { btn.textContent = "📲 App Install karein — Home Screen par"; }
+      deferredPrompt = null;
+    });
+    return;
+  }
   var html = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
   var blob = new Blob([html], {type: "text/html"});
   var url = URL.createObjectURL(blob);
