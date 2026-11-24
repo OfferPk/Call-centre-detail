@@ -13,6 +13,8 @@
   header p{font-size:13px;opacity:.9;margin-top:6px;line-height:1.5}
   .offbadge{display:inline-block;background:#2ecc71;color:#062b16;font-size:11px;font-weight:700;border-radius:20px;padding:3px 9px;margin-top:8px}
   .datebadge{display:inline-block;background:rgba(255,255,255,.18);color:#fff;font-size:11px;border-radius:20px;padding:3px 9px;margin-top:8px;margin-left:6px}
+  .dlbtn{display:block;width:100%;margin-top:12px;padding:12px;border:none;border-radius:10px;background:#2ecc71;color:#062b16;font-size:15px;font-weight:800;cursor:pointer}
+  .dlbtn:active{background:#27ae60}
   h2{font-size:15px;margin:16px 0 8px}
   .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .stat{background:#fff;border-radius:12px;padding:12px;border:1px solid #e3e5e8}
@@ -69,7 +71,8 @@
   <header>
     <h1>📋 Call Centre Detail</h1>
     <p>Offline app — kisi bhi centre ki history check karein: naam, phone, location aur SECP status. Internet ki zaroorat nahi.</p>
-    <span class="offbadge">● OFFLINE</span><span class="datebadge" id="datadate"></span>
+    <span class="offbadge">● OFFLINE</span><span class="datebadge" id="datadate"></span><br>
+    <button class="dlbtn" id="dlbtn">⬇️ App Download karein — Offline use ke liye</button>
   </header>
 
   <h2>📊 Dashboard</h2>
@@ -122,7 +125,8 @@
     1. Kisi centre par jayen to <b>naam ya phone</b> se search karein.<br>
     2. Card ka <b>rang</b> pehli nishani hai: laal = red flag, peela = yellow, hara = registered, grey = abhi check nahi hua.<br>
     3. Card par tap karein — poori history khul jayegi: campaign, SECP status, CUIN aur notes.<br>
-    4. Phone number par tap kar ke direct call kar sakte hain.
+    4. Phone number par tap kar ke direct call kar sakte hain.<br>
+    5. <b>⬇️ Download button</b> se app ki file save kar lein — phir bina internet ke bhi chalegi. Naya version aaye to link se dobara download kar lein.
   </div>
 
   <footer id="foot"></footer>
@@ -321,6 +325,23 @@ $("clear").addEventListener("click", function(){
   renderAreaSelect(); applyFilters();
 });
 $("more").addEventListener("click", function(){ shown += PAGE; renderCards(); });
+$("dlbtn").addEventListener("click", function(){
+  var btn = $("dlbtn");
+  var html = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+  var blob = new Blob([html], {type: "text/html"});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = "call-centres-app.html";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  btn.textContent = "✓ Download ho rahi hai…";
+  setTimeout(function(){
+    URL.revokeObjectURL(url);
+    btn.textContent = "⬇️ App Download karein — Offline use ke liye";
+  }, 3000);
+});
 
 renderStats(); renderCityList(); renderCitySelect(); renderAreaSelect(); applyFilters();
 </script>
