@@ -12,10 +12,11 @@ par check karein.
 ## Data (24 Nov 2026)
 
 - **4,359** centres, **57** sheher
-- SECP status: **270 registered**, **414 not registered**, 48 ambiguous,
-  3,627 abhi check nahi hue
+- SECP status: **351 registered**, **573 not registered**, 62 ambiguous,
+  3,373 abhi check nahi hue
 - Tier: **319 RED**, **19 YELLOW**, baqi normal (—)
-- Islamabad: 552 centres — 343 SECP-checked (136 registered, 186 not registered)
+- Islamabad: 552 centres — 551 SECP-checked (199 registered, 318 not registered,
+  34 ambiguous)
 
 ## Card ke rang
 
