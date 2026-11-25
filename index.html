@@ -20,13 +20,18 @@
   .dlbtn:active{background:#27ae60}
   h2{font-size:15px;margin:16px 0 8px}
   .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .stat{background:#fff;border-radius:12px;padding:12px;border:1px solid #e3e5e8}
-  .stat b{font-size:22px;display:block;line-height:1.1}
-  .stat span{font-size:12px;color:#555}
+  .stat{background:#fff;border-radius:14px;padding:14px 16px;border:1px solid #e5e7eb;border-left:4px solid var(--accent,#111827);box-shadow:0 2px 6px rgba(15,23,42,.04);transition:transform .15s ease,box-shadow .15s ease;--accent:#111827}
+  .stat:active{transform:scale(.98)}
+  .stat b{font-size:1.65rem;font-weight:700;display:block;line-height:1.15;letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-bottom:6px}
+  .stat span{font-size:.85rem;color:#64748b;text-transform:capitalize;display:flex;align-items:center;gap:6px}
+  .stat.red{--accent:#c0392b}.stat.green{--accent:#1e8449}.stat.yellow{--accent:#b7950b}.stat.grey{--accent:#555}.stat.pink{--accent:#db2777}
   .stat.red b{color:#c0392b}.stat.green b{color:#1e8449}.stat.yellow b{color:#b7950b}.stat.grey b{color:#555}.stat.pink b{color:#db2777}
+  .status-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;background-color:var(--accent)}
   .legend{background:#fff;border-radius:12px;padding:12px;border:1px solid #e3e5e8;font-size:13px;line-height:1.9}
-  .dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px}
-  .dot.red{background:#e74c3c}.dot.yellow{background:#f1c40f}.dot.green{background:#27ae60}.dot.grey{background:#bdc3c7}.dot.pink{background:#ec4899}
+  .legend-list{display:flex;flex-direction:column;gap:12px}
+  .legend-item{display:flex;align-items:flex-start;gap:10px;font-size:.88rem;line-height:1.4;color:#334155}
+  .legend-item .status-dot{margin-top:6px}
+  .legend-note{margin-top:14px;padding:10px 12px;background:#fef2f2;border-left:3px solid #dc2626;border-radius:8px;font-size:.82rem;line-height:1.45;color:#7f1d1d}
   details{background:#fff;border-radius:12px;border:1px solid #e3e5e8;padding:10px 12px}
   details summary{font-weight:700;font-size:14px;cursor:pointer}
   .cityrow{display:flex;justify-content:space-between;align-items:center;padding:9px 2px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:14px}
@@ -108,7 +113,7 @@
   <header>
     <h1>📋 Call Centre Detail</h1>
     <p>Offline app — kisi bhi centre ki history check karein: naam, phone, location aur SECP status. Internet ki zaroorat nahi.</p>
-    <span class="offbadge">● OFFLINE</span><span class="datebadge" id="datadate"></span><span class="datebadge">v20261125-2130</span><br>
+    <span class="offbadge">● OFFLINE</span><span class="datebadge" id="datadate"></span><span class="datebadge">v20261125-2134</span><br>
     <button class="dlbtn" id="dlbtn">⬇️ App Download karein — Offline use ke liye</button>
   </header>
 
@@ -139,12 +144,14 @@
 
   <h2>🎨 Rang ka matlab</h2>
   <div class="legend">
-    <div><span class="dot red"></span><b>Laal — RED FLAG:</b> scam-pattern campaign ya SECP par register nahi</div>
-    <div><span class="dot yellow"></span><b>Peela — YELLOW:</b> solar / energy campaign, ehtiyat se check karein</div>
-    <div><span class="dot green"></span><b>Hara — REGISTERED:</b> SECP par registered hai (CUIN ke saath)</div>
-    <div><span class="dot pink"></span><b>Gulaabi — NOT SURE:</b> SECP status not sure hai, confirm nahi hua</div>
-    <div><span class="dot grey"></span><b>Grey — NOT CHECKED:</b> SECP status abhi check nahi hua</div>
-    <div style="margin-top:6px;font-size:12px;color:#666">Note: SECP registration ka matlab "clean" nahi — agar campaign RED hai to card laal hi rahega.</div>
+    <div class="legend-list">
+      <div class="legend-item"><span class="status-dot" style="--accent:#e74c3c"></span><div><b>Laal — RED FLAG:</b> scam-pattern campaign ya SECP par register nahi</div></div>
+      <div class="legend-item"><span class="status-dot" style="--accent:#f1c40f"></span><div><b>Peela — YELLOW:</b> solar / energy campaign, ehtiyat se check karein</div></div>
+      <div class="legend-item"><span class="status-dot" style="--accent:#27ae60"></span><div><b>Hara — REGISTERED:</b> SECP par registered hai (CUIN ke saath)</div></div>
+      <div class="legend-item"><span class="status-dot" style="--accent:#ec4899"></span><div><b>Gulaabi — NOT SURE:</b> SECP status not sure hai, confirm nahi hua</div></div>
+      <div class="legend-item"><span class="status-dot" style="--accent:#bdc3c7"></span><div><b>Grey — NOT CHECKED:</b> SECP status abhi check nahi hua</div></div>
+    </div>
+    <div class="legend-note">Note: SECP registration ka matlab "clean" nahi — agar campaign RED hai to card laal hi rahega.</div>
   </div>
 
   <h2>🏙️ Sheher ke hisaab se</h2>
@@ -262,17 +269,17 @@ function renderStats(){
   var s = STATS;
   $("datadate").textContent = "Data: " + s.date;
   var items = [
-    ["Total Centres", s.total, ""],
-    ["🟢 Registered", s.reg, "green"],
-    ["🔴 Not Registered", s.notreg, "red"],
-    ["🚩 RED Flag", s.red, "red"],
-    ["🟡 Yellow", s.yel, "yellow"],
-    ["⚪ Not Checked", s.unchecked, "grey"],
-    ["not sure", s.amb, "pink"],
-    ["🏙️ Sheher", s.cities, ""]
+    ["Total Centres", s.total, "", false],
+    ["Registered", s.reg, "green", true],
+    ["Not Registered", s.notreg, "red", true],
+    ["RED Flag", s.red, "red", true],
+    ["Yellow", s.yel, "yellow", true],
+    ["Not Checked", s.unchecked, "grey", true],
+    ["not sure", s.amb, "pink", true],
+    ["Sheher", s.cities, "", false]
   ];
   $("stats").innerHTML = items.map(function(it){
-    return '<div class="stat '+it[2]+'"><b>'+it[1].toLocaleString("en-US")+'</b><span>'+it[0]+'</span></div>';
+    return '<div class="stat '+it[2]+'"><b>'+it[1].toLocaleString("en-US")+'</b><span>'+(it[3] ? '<i class="status-dot"></i>' : '')+it[0]+'</span></div>';
   }).join("");
   $("foot").textContent = "Data: " + s.total.toLocaleString("en-US") + " centres • " + s.cities + " sheher • " + s.date + " • Offline file — internet ki zaroorat nahi.";
 }
