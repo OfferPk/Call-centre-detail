@@ -14,18 +14,21 @@
   header{background:#102a43;color:#fff;border-radius:14px;padding:16px 14px 14px;margin-bottom:12px}
   header h1{font-size:22px;line-height:1.2}
   header p{font-size:13px;opacity:.9;margin-top:6px;line-height:1.5}
-  .offbadge{display:inline-block;background:#2ecc71;color:#062b16;font-size:11px;font-weight:700;border-radius:20px;padding:3px 9px;margin-top:8px}
+  .offbadge{display:inline-block;background:rgba(46,204,113,.22);color:#a7f3d0;border:1px solid rgba(46,204,113,.45);font-size:11px;font-weight:700;border-radius:20px;padding:3px 9px;margin-top:8px}
   .datebadge{display:inline-block;background:rgba(255,255,255,.18);color:#fff;font-size:11px;border-radius:20px;padding:3px 9px;margin-top:8px;margin-left:6px}
-  .dlbtn{display:block;width:100%;margin-top:12px;padding:12px;border:none;border-radius:10px;background:#2ecc71;color:#062b16;font-size:15px;font-weight:800;cursor:pointer}
+  .dlbtn{display:block;width:100%;margin-top:12px;padding:12px 8px;border:none;border-radius:10px;background:#2ecc71;color:#062b16;font-size:clamp(12px,3.6vw,15px);font-weight:800;cursor:pointer;white-space:nowrap}
   .dlbtn:active{background:#27ae60}
   h2{font-size:15px;margin:16px 0 8px}
   .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .stat{background:#fff;border-radius:14px;padding:14px 16px;border:1px solid #e5e7eb;border-left:4px solid var(--accent,#111827);box-shadow:0 2px 6px rgba(15,23,42,.04);transition:transform .15s ease,box-shadow .15s ease;--accent:#111827}
+  .stat{background:#fff;border-radius:14px;padding:14px 16px;border:1px solid #e5e7eb;box-shadow:0 2px 6px rgba(15,23,42,.04);transition:transform .15s ease,box-shadow .15s ease;--accent:#111827;position:relative;overflow:hidden}
+  .stat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent,#111827)}
+  .stat.wide{grid-column:1 / -1}
+  .stat.tint{background:#fef2f2}
   .stat:active{transform:scale(.98)}
   .stat b{font-size:1.65rem;font-weight:700;display:block;line-height:1.15;letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-bottom:6px}
   .stat span{font-size:.85rem;color:#64748b;text-transform:capitalize;display:flex;align-items:center;gap:6px}
-  .stat.red{--accent:#c0392b}.stat.green{--accent:#1e8449}.stat.yellow{--accent:#b7950b}.stat.grey{--accent:#555}.stat.pink{--accent:#db2777}
-  .stat.red b{color:#c0392b}.stat.green b{color:#1e8449}.stat.yellow b{color:#b7950b}.stat.grey b{color:#555}.stat.pink b{color:#db2777}
+  .stat.red{--accent:#c0392b}.stat.green{--accent:#1e8449}.stat.yellow{--accent:#b7950b}.stat.grey{--accent:#555}.stat.pink{--accent:#db2777}.stat.blue{--accent:#2563eb}
+  .stat.red b{color:#c0392b}.stat.green b{color:#1e8449}.stat.yellow b{color:#b7950b}.stat.grey b{color:#555}.stat.pink b{color:#db2777}.stat.blue b{color:#2563eb}
   .status-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;background-color:var(--accent)}
   .legend{background:#fff;border-radius:12px;padding:12px;border:1px solid #e3e5e8;font-size:13px;line-height:1.9}
   .legend-list{display:flex;flex-direction:column;gap:12px}
@@ -113,7 +116,7 @@
   <header>
     <h1>📋 Call Centre Detail</h1>
     <p>Offline app — kisi bhi centre ki history check karein: naam, phone, location aur SECP status. Internet ki zaroorat nahi.</p>
-    <span class="offbadge">● OFFLINE</span><span class="datebadge" id="datadate"></span><span class="datebadge">v20261125-2134</span><br>
+    <span class="offbadge">● OFFLINE</span><span class="datebadge" id="datadate"></span><span class="datebadge">v20261125-2149</span><br>
     <button class="dlbtn" id="dlbtn">⬇️ App Download karein — Offline use ke liye</button>
   </header>
 
@@ -269,17 +272,18 @@ function renderStats(){
   var s = STATS;
   $("datadate").textContent = "Data: " + s.date;
   var items = [
-    ["Total Centres", s.total, "", false],
-    ["Registered", s.reg, "green", true],
-    ["Not Registered", s.notreg, "red", true],
-    ["RED Flag", s.red, "red", true],
-    ["Yellow", s.yel, "yellow", true],
-    ["Not Checked", s.unchecked, "grey", true],
-    ["not sure", s.amb, "pink", true],
-    ["Sheher", s.cities, "", false]
+    ["Total Centres", s.total, "", false, true],
+    ["Registered", s.reg, "green", true, false],
+    ["Not Registered", s.notreg, "red", true, false],
+    ["RED Flag", s.red, "red tint", true, false],
+    ["Yellow", s.yel, "yellow", true, false],
+    ["Not Checked", s.unchecked, "grey", true, false],
+    ["not sure", s.amb, "pink", true, false],
+    ["Sheher", s.cities, "", false, false],
+    ["Total Checked", s.total - s.unchecked, "blue", true, false]
   ];
   $("stats").innerHTML = items.map(function(it){
-    return '<div class="stat '+it[2]+'"><b>'+it[1].toLocaleString("en-US")+'</b><span>'+(it[3] ? '<i class="status-dot"></i>' : '')+it[0]+'</span></div>';
+    return '<div class="stat '+it[2]+(it[4] ? ' wide' : '')+'"><b>'+it[1].toLocaleString("en-US")+'</b><span>'+(it[3] ? '<i class="status-dot"></i>' : '')+it[0]+'</span></div>';
   }).join("");
   $("foot").textContent = "Data: " + s.total.toLocaleString("en-US") + " centres • " + s.cities + " sheher • " + s.date + " • Offline file — internet ki zaroorat nahi.";
 }
