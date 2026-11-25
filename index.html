@@ -49,14 +49,21 @@
   .frow select{flex:1}
   .clearbtn{width:100%;padding:10px;border:none;border-radius:10px;background:#eef1f4;font-size:14px;font-weight:700;cursor:pointer}
   .countline{font-size:13px;color:#444;margin:12px 2px 8px}
-  .card{background:#fff;border-radius:12px;border:1px solid #e3e5e8;border-left:6px solid #bdc3c7;margin-bottom:10px;overflow:hidden}
-  .card.red{border-left-color:#e74c3c}
-  .card.yellow{border-left-color:#f1c40f}
-  .card.green{border-left-color:#27ae60}
-  .card.pink{border-left-color:#ec4899}
+  .card{background:#fff;border-radius:12px;border:1px solid #e3e5e8;margin-bottom:10px;overflow:hidden;position:relative}
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:#bdc3c7}
+  .card.red::before{background:#e74c3c}
+  .card.yellow::before{background:#f1c40f}
+  .card.green::before{background:#27ae60}
+  .card.pink::before{background:#ec4899}
   .cardhead{padding:11px 12px 8px;cursor:pointer}
-  .cardhead .nm{font-size:16px;font-weight:700;line-height:1.3}
-  .num{display:inline-block;font-size:12px;font-weight:800;border-radius:6px;padding:2px 7px;margin-right:6px;vertical-align:1px}
+  .nm-row{display:flex;align-items:center;gap:8px}
+  .name-marquee{flex:1;min-width:0;overflow:hidden;white-space:nowrap;-webkit-mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent)}
+  .name-track{display:inline-flex;animation:marquee 10s linear infinite;animation-play-state:paused}
+  .name-text{font-size:16px;font-weight:700;line-height:1.3;padding-right:48px;white-space:nowrap}
+  .card.is-visible .name-track{animation-play-state:running;will-change:transform}
+  .name-marquee:hover .name-track,.name-marquee:active .name-track{animation-play-state:paused}
+  @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .num{flex-shrink:0;font-size:12px;font-weight:800;border-radius:6px;padding:2px 7px}
   .badge{display:inline-block;font-size:11px;font-weight:700;border-radius:20px;padding:2px 8px;margin-top:6px}
   .badge.red{background:#fdecea;color:#c0392b}
   .badge.yellow{background:#fef9e7;color:#7d6608}
@@ -65,6 +72,9 @@
   .badge.pink{background:#fce7f3;color:#9d174d}
   .badge.dark{background:#eaf0f6;color:#102a43}
   .meta{font-size:13.5px;color:#333;line-height:1.55;padding:0 12px 10px}
+  .addr-row{display:flex;align-items:flex-start;gap:6px}
+  .addr-row .pin{flex-shrink:0}
+  .addr-row>span:last-child{min-width:0}
   .meta a{color:#1565c0;text-decoration:none;font-weight:600}
   .meta .lbl{color:#777;font-size:12px}
   .grounds{font-size:13px;color:#444;background:#f8f9fa;border-radius:8px;padding:8px 10px;margin:0 12px 10px;line-height:1.5}
@@ -119,7 +129,7 @@
   <header>
     <h1>📋 Call Centre Detail</h1>
     <p>Offline app — kisi bhi centre ki history check karein: naam, phone, location aur SECP status. Internet ki zaroorat nahi.</p>
-    <span class="offbadge">● OFFLINE</span><span class="datebadge" id="datadate"></span><span class="datebadge">v20261125-2156</span><br>
+    <span class="offbadge">● OFFLINE</span><span class="datebadge" id="datadate"></span><span class="datebadge">v20261125-2159</span><br>
     <button class="dlbtn" id="dlbtn">⬇️ App Download karein — Offline use ke liye</button>
   </header>
 
@@ -381,6 +391,8 @@ function cardHtml(x, num){
   var v = x._v;
   var ci = (num - 1) % PALETTE.length;
   var numBadge = '<span class="num" style="background:'+PALETTE[ci][0]+';color:'+PALETTE[ci][1]+'">'+num+'</span>';
+  var nameEsc = esc(x.n);
+  var nameRow = '<div class="nm-row">'+numBadge+'<div class="name-marquee"><div class="name-track"><span class="name-text">'+nameEsc+'</span><span class="name-text">'+nameEsc+'</span></div></div></div>';
   var badge = v==="red" ? '<span class="badge red">🚩 RED FLAG</span>'
     : v==="yellow" ? '<span class="badge yellow">🟡 YELLOW</span>'
     : v==="green" ? '<span class="badge green">🟢 REGISTERED</span>'
@@ -406,25 +418,40 @@ function cardHtml(x, num){
     + (x.w ? '<div style="margin-top:6px"><b>Website:</b> <a href="'+esc(x.w)+'" target="_blank" rel="noopener">'+esc(x.w)+'</a></div>' : '')
     + (x.m ? '<div style="margin-top:6px"><a href="'+esc(x.m)+'" target="_blank" rel="noopener">📍 Google Maps par dekhein</a></div>' : '')
     + '</div>';
-  return '<div class="card '+v+'"><div class="cardhead"><div class="nm">'+numBadge+esc(x.n)+'</div>'
+  return '<div class="card '+v+'"><div class="cardhead">'+nameRow
     + badge + ' ' + secpB + ' ' + tierB
-    + '</div><div class="meta">'+phone+' &nbsp;•&nbsp; '+esc(x.c)+'<br>📍 '+addr+'</div>'
+    + '</div><div class="meta"><div>'+phone+' &nbsp;•&nbsp; '+esc(x.c)+'</div><div class="addr-row"><span class="pin">📍</span><span>'+addr+'</span></div></div>'
     + (x.g ? '<div class="grounds">'+esc(x.g.length>140 ? x.g.slice(0,140)+"…" : x.g)+'</div>' : '')
     + det + '</div>';
 }
 
 var filtered = ROWS;
+/* Marquee runs only while a card is on screen: IntersectionObserver toggles
+   .is-visible; without it (old browsers) every card animates. */
+var nameObs = null;
+if("IntersectionObserver" in window){
+  nameObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      en.target.classList.toggle("is-visible", en.isIntersecting);
+    });
+  }, {threshold: 0.1});
+}
 function applyFilters(){
   shown = PAGE;
   filtered = ROWS.filter(matchRow);
   renderCards();
 }
 function renderCards(){
+  if(nameObs) nameObs.disconnect();
   var list = filtered.slice(0, shown);
   $("countline").textContent = filtered.length.toLocaleString("en-US") + " centres mile" + (state.city ? " — " + state.city : "") + (state.area ? " • " + state.area : "");
   $("cards").innerHTML = list.map(function(x, k){ return cardHtml(x, k + 1); }).join("") || '<div style="background:#fff;border-radius:12px;padding:20px;text-align:center;color:#666">Koi centre nahi mila — search ya filter badal kar dekhein.</div>';
   document.querySelectorAll(".cardhead").forEach(function(h){
     h.addEventListener("click", function(){ h.parentElement.classList.toggle("open"); });
+  });
+  document.querySelectorAll(".card").forEach(function(c){
+    if(nameObs) nameObs.observe(c);
+    else c.classList.add("is-visible");
   });
   $("more").style.display = filtered.length > shown ? "block" : "none";
 }
