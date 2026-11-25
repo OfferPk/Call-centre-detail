@@ -34,7 +34,8 @@
   .legend-list{display:flex;flex-direction:column;gap:12px}
   .legend-item{display:flex;align-items:flex-start;gap:10px;font-size:.88rem;line-height:1.4;color:#334155}
   .legend-item .status-dot{margin-top:6px}
-  .legend-note{margin-top:14px;padding:10px 12px;background:#fef2f2;border-left:3px solid #dc2626;border-radius:8px;font-size:.82rem;line-height:1.45;color:#7f1d1d}
+  .legend-note{margin-top:14px;padding:10px 12px;background:#fef2f2;border-radius:8px;font-size:.82rem;line-height:1.45;color:#7f1d1d;position:relative;overflow:hidden}
+  .legend-note::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:#dc2626}
   details{background:#fff;border-radius:12px;border:1px solid #e3e5e8;padding:10px 12px}
   details summary{font-weight:700;font-size:14px;cursor:pointer}
   .cityrow{display:flex;justify-content:space-between;align-items:center;padding:9px 2px;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:14px}
@@ -83,19 +84,18 @@
   .bar-row{margin-bottom:13px}
   .bar-row:last-of-type{margin-bottom:6px}
   .bar-top{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;margin-bottom:5px}
-  .bar-top .bl{font-weight:700}
+  .bar-top .bl{font-weight:700;display:inline-flex;align-items:center;gap:6px}
   .bar-top .bv{font-weight:800}
-  .bar-track{height:26px;background:#eef1f4;border-radius:20px;overflow:hidden}
-  .bar-fill{height:100%;border-radius:20px;position:relative;transition:width .5s ease}
-  .bar-fill.blue{background:linear-gradient(90deg,#1565c0,#42a5f5);animation:beat 2.4s ease-in-out infinite}
+  .bar-track{height:10px;background:#eef1f4;border-radius:999px;overflow:hidden}
+  .bar-fill{height:100%;border-radius:999px;position:relative;transition:width .5s ease}
   .bar-fill.green{background:#27ae60}
   .bar-fill.yellow{background:#f1c40f}
+  .bar-fill.pink{background:#db2777}
   .bar-fill.red{background:#e74c3c}
-  .bar-fill.blue .ecg{position:absolute;inset:0;width:100%;height:100%}
-  .bar-fill.blue .ecg path{stroke:#fff;stroke-width:2.2;fill:none;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:26 94;animation:ecgmove 2.4s linear infinite}
-  @keyframes ecgmove{to{stroke-dashoffset:-120}}
-  @keyframes beat{0%,100%{box-shadow:0 0 0 0 rgba(21,101,192,.30)}50%{box-shadow:0 0 0 5px rgba(21,101,192,0)}}
-  .bar-note{font-size:12.5px;color:#555;line-height:1.5;margin-top:6px}
+  .bar-stack{display:flex;width:100%;height:100%;border-radius:999px;overflow:hidden}
+  .bar-seg{height:100%;flex:none;transition:width .5s ease}
+  .seg-green{background:#27ae60}.seg-pink{background:#db2777}.seg-red{background:#e74c3c}
+  .bar-note{font-family:inherit;font-size:.82rem;color:#555;line-height:1.5;margin-top:10px;background:#f8fafc;padding:10px 12px;border-radius:10px}
   .builder label{font-size:13px;font-weight:700;color:#444;display:block;margin:10px 0 4px}
   .builder input[type=text],.builder input[type=number],.builder select{width:100%;font-size:15px;padding:10px;border:1.5px solid #ccd0d5;border-radius:10px;background:#fff}
   .builder .hint{font-size:12px;color:#777;margin-top:4px;line-height:1.5}
@@ -116,7 +116,7 @@
   <header>
     <h1>📋 Call Centre Detail</h1>
     <p>Offline app — kisi bhi centre ki history check karein: naam, phone, location aur SECP status. Internet ki zaroorat nahi.</p>
-    <span class="offbadge">● OFFLINE</span><span class="datebadge" id="datadate"></span><span class="datebadge">v20261125-2149</span><br>
+    <span class="offbadge">● OFFLINE</span><span class="datebadge" id="datadate"></span><span class="datebadge">v20261125-2152</span><br>
     <button class="dlbtn" id="dlbtn">⬇️ App Download karein — Offline use ke liye</button>
   </header>
 
@@ -127,19 +127,19 @@
   <div class="bars">
     <select id="bar-city"></select>
     <div class="bar-row">
-      <div class="bar-top"><span class="bl">🔵 Total Centres</span><span class="bv" id="bar-total-val"></span></div>
-      <div class="bar-track"><div class="bar-fill blue" id="bar-total-fill" style="width:100%"><svg class="ecg" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 10 H22 L28 3 L34 17 L40 10 H56 L61 4 L66 16 L71 10 H100"/></svg></div></div>
+      <div class="bar-top"><span class="bl"><i class="status-dot" style="--accent:#2563eb"></i>Total Centres</span><span class="bv" id="bar-total-val"></span></div>
+      <div class="bar-track"><div class="bar-stack"><div class="bar-seg seg-green" id="bar-seg-reg" style="width:0%"></div><div class="bar-seg seg-pink" id="bar-seg-amb" style="width:0%"></div><div class="bar-seg seg-red" id="bar-seg-nr" style="width:0%"></div></div></div>
     </div>
     <div class="bar-row">
-      <div class="bar-top"><span class="bl">🟢 Registered</span><span class="bv" id="bar-reg-val"></span></div>
+      <div class="bar-top"><span class="bl"><i class="status-dot" style="--accent:#27ae60"></i>Registered</span><span class="bv" id="bar-reg-val"></span></div>
       <div class="bar-track"><div class="bar-fill green" id="bar-reg-fill" style="width:0%"></div></div>
     </div>
     <div class="bar-row">
-      <div class="bar-top"><span class="bl">🟡 Not sure (pata nahi)</span><span class="bv" id="bar-amb-val"></span></div>
-      <div class="bar-track"><div class="bar-fill yellow" id="bar-amb-fill" style="width:0%"></div></div>
+      <div class="bar-top"><span class="bl"><i class="status-dot" style="--accent:#db2777"></i>Not sure (pata nahi)</span><span class="bv" id="bar-amb-val"></span></div>
+      <div class="bar-track"><div class="bar-fill pink" id="bar-amb-fill" style="width:0%"></div></div>
     </div>
     <div class="bar-row">
-      <div class="bar-top"><span class="bl">🔴 Not registered</span><span class="bv" id="bar-nr-val"></span></div>
+      <div class="bar-top"><span class="bl"><i class="status-dot" style="--accent:#e74c3c"></i>Not registered</span><span class="bv" id="bar-nr-val"></span></div>
       <div class="bar-track"><div class="bar-fill red" id="bar-nr-fill" style="width:0%"></div></div>
     </div>
     <div class="bar-note" id="bar-note"></div>
@@ -497,7 +497,9 @@ function renderBars(){
   function pct(x){ return b.n ? (Math.round(x / b.n * 1000) / 10) : 0; }
   function num(x){ return x.toLocaleString("en-US"); }
   $("bar-total-val").textContent = num(b.n) + " centres";
-  $("bar-total-fill").style.width = "100%";
+  $("bar-seg-reg").style.width = (b.n ? (b.r / b.n * 100) : 0) + "%";
+  $("bar-seg-amb").style.width = (b.n ? (b.a / b.n * 100) : 0) + "%";
+  $("bar-seg-nr").style.width = (b.n ? (b.nr / b.n * 100) : 0) + "%";
   $("bar-reg-fill").style.width = (b.n ? (b.r / b.n * 100) : 0) + "%";
   $("bar-reg-val").textContent = num(b.r) + " • " + pct(b.r) + "%";
   $("bar-amb-fill").style.width = (b.n ? (b.a / b.n * 100) : 0) + "%";
