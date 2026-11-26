@@ -42,6 +42,10 @@
   .cityrow:last-child{border-bottom:none}
   .cityrow small{color:#666;font-size:12px}
   .cityrow .cnt{font-weight:700}
+  .benchrow{display:flex;justify-content:space-between;align-items:center;padding:9px 2px;border-bottom:1px solid #f0f0f0;font-size:14px}
+  .benchrow:last-child{border-bottom:none}
+  .benchrow small{color:#666;font-size:12px}
+  .benchrow .cnt{font-weight:700}
   .filters{background:#fff;border-radius:12px;padding:12px;border:1px solid #e3e5e8}
   .filters input[type=search]{width:100%;font-size:16px;padding:11px 12px;border:1.5px solid #ccd0d5;border-radius:10px;margin-bottom:8px}
   .filters select{width:100%;font-size:15px;padding:10px;border:1.5px solid #ccd0d5;border-radius:10px;margin-bottom:8px;background:#fff}
@@ -132,12 +136,23 @@
   <header>
     <h1>📋 Call Centre Detail</h1>
     <p>Offline app — kisi bhi centre ki history check karein: naam, phone, location aur SECP status. Internet ki zaroorat nahi.</p>
-    <span class="offbadge">● OFFLINE</span><span class="datebadge" id="datadate"></span><span class="datebadge">v20261126-1753</span><br>
+    <span class="offbadge">● OFFLINE</span><span class="datebadge" id="datadate"></span><span class="datebadge">v20261126-1820</span><br>
     <button class="dlbtn" id="dlbtn">⬇️ App Download karein — Offline use ke liye</button>
   </header>
 
   <h2>📊 Dashboard</h2>
   <div class="stats" id="stats"></div>
+
+  <h2>🎯 Benchmark — asal mein kitne centres hain?</h2>
+  <div class="bars">
+    <div class="benchrow"><span>PSEB registered call centres <small>(official, 2026)</small></span><span class="cnt">1,000+</span></div>
+    <div class="benchrow"><span>SECP mein Call Centers / BPO companies <small>(Dec 2025)</small></span><span class="cnt">2,408</span></div>
+    <div class="benchrow"><span>Kul bare centres <small>(PSEB + deegar)</small></span><span class="cnt">~1,500</span></div>
+    <div class="benchrow"><span>Hamari list — SECP Registered</span><span class="cnt" id="bench-reg"></span></div>
+    <div class="benchrow"><span>Hamari list — Not Registered</span><span class="cnt" id="bench-nr"></span></div>
+    <div class="benchrow"><span>Hamari list — abhi check nahi hue</span><span class="cnt" id="bench-unc"></span></div>
+    <div class="bar-note">Hamari list mein kul <b id="bench-total"></b> rows hain — in mein software houses, marketing agencies aur e-commerce firms bhi shamil hain; asal voice call centre is se kam hain, is liye kul taadad benchmark se zyada nazar aati hai.</div>
+  </div>
 
   <h2>📊 Sheher ki Bars</h2>
   <div class="bars">
@@ -252,7 +267,8 @@
     6. Har card par <b>number</b> hai — All Cities mein 1 se kul centres tak, sheher select karein to us sheher ke 1 se shuru. Card kholein to us ka apna Centre No bhi dikhta hai; number likh kar search bhi kar sakte hain.<br>
     7. <b>📋 List Banayen</b> se kisi bhi sheher / area / campaign / status ki Excel list bana sakte hain — jaise Islamabad ke 50 not-registered centres, Rehmanabad ke saare centres, ya Final Expense campaign ke saare centres.<br>
     8. <b>📊 Sheher ki Bars</b> se kisi bhi sheher ka hisaab aik nazar mein dekhein — neeli heartbeat bar kul centres, us ke neeche hari (registered), peeli (not sure) aur laal (not registered) bars.<br>
-    9. <b>🔖 NEW batch</b> — bahar se aayi nayi files ke centres par NEW tag laga hai; filter mein "NEW batch hi dikhayen" tick karein to sirf wohi centres dikhen ge.
+    9. <b>🔖 NEW batch</b> — bahar se aayi nayi files ke centres par NEW tag laga hai; filter mein "NEW batch hi dikhayen" tick karein to sirf wohi centres dikhen ge.<br>
+    10. <b>🎯 Benchmark</b> — dekhein ke Pakistan mein asal mein kitne call centres hone chahiye (PSEB 1,000+, SECP 2,408) aur hamari list mein kitne registered, not registered aur check nahi hue hain.
   </div>
 
   <footer id="foot"></footer>
@@ -306,6 +322,10 @@ function renderStats(){
   $("stats").innerHTML = items.map(function(it){
     return '<div class="stat '+it[2]+(it[4] ? ' wide' : '')+'"><b>'+it[1].toLocaleString("en-US")+'</b><span>'+(it[3] ? '<i class="status-dot"></i>' : '')+it[0]+'</span></div>';
   }).join("");
+  $("bench-reg").textContent = s.reg.toLocaleString("en-US");
+  $("bench-nr").textContent = s.notreg.toLocaleString("en-US");
+  $("bench-unc").textContent = s.unchecked.toLocaleString("en-US");
+  $("bench-total").textContent = s.total.toLocaleString("en-US");
   $("foot").textContent = "Data: " + s.total.toLocaleString("en-US") + " centres • " + s.cities + " sheher • " + s.date + " • Offline file — internet ki zaroorat nahi.";
 }
 
