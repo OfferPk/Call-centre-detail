@@ -1,4 +1,4 @@
-var CACHE = "cc-detail-20261126-2033";
+var CACHE = "cc-detail-20261127-0244";
 var FILES = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
 self.addEventListener("install", function(e){
   e.waitUntil(caches.open(CACHE).then(function(c){ return c.addAll(FILES); }).then(function(){ return self.skipWaiting(); }));
